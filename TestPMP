@@ -1,0 +1,22 @@
+--Test de la requête pour le PMP en rapport avec le LOG11
+
+
+select sum(pmp.t_mauc_1) 
+from twhina137500 pmp 
+where pmp.t_item = '         100224500'
+and substring(pmp.t_wvgr, 4, len(pmp.t_wvgr)) = concat('V', left(trstk.t_cwar, 2)) 
+and pmp.t_cpcp = 'MATIER' 
+and pmp.t_trdt = 
+	(select max(pmp2.t_trdt) 
+	from twhina137500 pmp2 
+	where pmp2.t_item = pmp.t_item 
+	and substring(pmp2.t_wvgr, 4, len(pmp2.t_wvgr)) = concat('V', left(trstk.t_cwar, 2)) 
+	and pmp2.t_trdt <= getdate() 
+	and pmp2.t_cpcp = 'MATIER' 
+	and pmp.t_seqn = 
+		(select max(pmp3.t_seqn) 
+		from twhina137500 pmp3 
+		where pmp3.t_item = pmp.t_item 
+		and substring(pmp2.t_wvgr, 4, len(pmp2.t_wvgr)) = concat('V', left(trstk.t_cwar, 2)) 
+		and pmp3.t_trdt <= getdate() 
+		and pmp3.t_trdt = pmp.t_trdt))
